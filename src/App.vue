@@ -72,7 +72,7 @@
         </div>
       </nav>
 
-      <!-- Ana içerik - PWA Optimized -->
+      <!-- Ana içerik - Instagram Style -->
       <main class="w-full max-w-full pb-20 safe-area-padding">
         <!-- Stories Section -->
         <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800 w-full no-scrollbar">
@@ -86,7 +86,7 @@
           </div>
         </div>
 
-        <!-- Posts - PWA Optimized -->
+        <!-- Posts - Instagram Style -->
         <div v-if="posts.length > 0" class="w-full">
           <div v-for="post in posts" :key="post.id" class="w-full bg-black border-b border-gray-800">
             <!-- Post Header -->
@@ -107,20 +107,17 @@
               </button>
             </div>
 
-            <!-- Post Image - PWA FIXED -->
-            <div class="w-full bg-black flex items-center justify-center p-0" style="contain: layout style paint;">
-              <div class="w-full flex justify-center items-center min-h-[200px]">
-                <img 
-                  v-if="post.image_url" 
-                  :src="post.image_url" 
-                  :alt="post.content" 
-                  class="max-w-full max-h-[80vh] w-auto h-auto"
-                  style="contain: layout style paint;"
-                  loading="lazy"
-                  @load="handleImageLoad"
-                >
-              </div>
-              <div v-else class="text-gray-500 text-lg flex flex-col items-center py-20 w-full">
+            <!-- Post Image - INSTAGRAM STYLE (ORANLARI KORU) -->
+            <div class="w-full bg-black flex justify-center items-start">
+              <img 
+                v-if="post.image_url" 
+                :src="post.image_url" 
+                :alt="post.content" 
+                class="max-w-full max-h-[80vh] w-auto h-auto"
+                loading="lazy"
+                @load="handleImageLoad"
+              >
+              <div v-else class="text-gray-500 text-lg flex flex-col items-center justify-center py-20 w-full min-h-[200px]">
                 <span class="text-4xl mb-2">📸</span>
                 <span class="text-white text-center px-4">{{ post.content }}</span>
               </div>
@@ -218,7 +215,6 @@ const userLikes = ref([])
 // Resim yükleme handler
 const handleImageLoad = (event) => {
   console.log('Resim yüklendi:', event.target.src)
-  // Resim yüklendikten sonra ekstra işlemler yapabilirsin
 }
 
 // Zaman formatlama
@@ -361,17 +357,10 @@ onMounted(() => {
   scrollbar-width: none;
 }
 
-/* PWA Image Optimization */
+/* Mobile optimized image rendering */
 img {
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-/* Critical PWA fix for images */
-.image-container {
-  contain: layout style paint;
 }
 </style>
