@@ -119,6 +119,23 @@ const handleImageUpload = async (event) => {
   }
 }
 
+// DOSYA ADI TEMİZLEME FONKSİYONU
+const cleanFileName = (fileName) => {
+  // Türkçe karakterleri ve özel karakterleri temizle
+  return fileName
+    .toLowerCase()
+    .replace(/[ğüşıöçĞÜŞİÖÇ]/g, (char) => {
+      const mapping = {
+        'ğ': 'g', 'ü': 'u', 'ş': 's', 'ı': 'i', 'ö': 'o', 'ç': 'c',
+        'Ğ': 'g', 'Ü': 'u', 'Ş': 's', 'İ': 'i', 'Ö': 'o', 'Ç': 'c'
+      }
+      return mapping[char] || char
+    })
+    .replace(/[^a-z0-9.-]/g, '_') // Sadece harf, rakam, nokta ve tire
+    .replace(/\s+/g, '_') // Boşlukları alt çizgi yap
+    .replace(/_{2,}/g, '_') // Çift alt çizgileri tek yap
+}
+
 const createPost = async () => {
   try {
     loading.value = true
@@ -127,21 +144,37 @@ const createPost = async () => {
       throw new Error('Lütfen bir fotoğraf seçin')
     }
 
-    // 1. Optimize edilmiş resmi Supabase Storage'a yükle
-    const fileName = `${Date.now()}-${originalFile.value.name}`
+    console.log('Post oluşturma başlıyor...')
+
+    // 1. Dosya adını temizle
+    const cleanName = cleanFileName(originalFile.value.name)
+    const fileName = `${Date.now()}-${cleanName}`
     
+    console.log('Dosya yükleme:', fileName)
+
+    // 2. Optimize edilmiş resmi Supabase Storage'a yükle
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('posts')
-      .upload(fileName, originalFile.value)
+      .upload(fileName, originalFile.value, {
+        cacheControl: '3600',
+        upsert: false
+      })
 
-    if (uploadError) throw uploadError
+    if (uploadError) {
+      console.error('Upload hatası:', uploadError)
+      throw new Error(`Dosya yükleme hatası: ${uploadError.message}`)
+    }
 
-    // 2. Public URL al
+    console.log('Dosya yüklendi:', uploadData)
+
+    // 3. Public URL al
     const { data: { publicUrl } } = supabase.storage
       .from('posts')
       .getPublicUrl(fileName)
 
-    // 3. Post'u veritabanına kaydet - TÜM KOLONLARLA
+    console.log('Public URL:', publicUrl)
+
+    // 4. Post'u veritabanına kaydet
     const { data: postData, error: postError } = await supabase
       .from('posts')
       .insert([
@@ -156,9 +189,14 @@ const createPost = async () => {
       ])
       .select()
 
-    if (postError) throw postError
+    if (postError) {
+      console.error('Post kaydetme hatası:', postError)
+      throw new Error(`Post kaydetme hatası: ${postError.message}`)
+    }
 
-    // 4. Başarılı
+    console.log('Post oluşturuldu:', postData)
+
+    // 5. Başarılı
     emit('post-created', postData[0])
     emit('close')
 

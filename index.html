@@ -3,24 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Viewport Fix -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
     <meta name="theme-color" content="#FF6B8B" />
     <meta name="description" content="instaile - Anı Paylaşım Platformu" />
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.webmanifest">
-    
-    <!-- PWA iOS Support -->
+
+    <!-- PWA Support -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="instaile">
-    
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+
     <title>instaile - Anı Paylaşım Platformu</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind CSS Production -->
+    <script>
+      // Production için optimize edilmiş Tailwind
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        // Production'da build edilmiş CSS kullan
+      } else {
+        // Development'da CDN kullan
+        const script = document.createElement('script');
+        script.src = 'https://cdn.tailwindcss.com';
+        document.head.appendChild(script);
+      }
+    </script>
   </head>
-  <body>
+  <body class="bg-black">
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
