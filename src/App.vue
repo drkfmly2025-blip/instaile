@@ -72,7 +72,7 @@
         </div>
       </nav>
 
-      <!-- Ana içerik - Mobile Optimized -->
+      <!-- Ana içerik - PWA Optimized -->
       <main class="w-full max-w-full pb-20 safe-area-padding">
         <!-- Stories Section -->
         <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800 w-full no-scrollbar">
@@ -86,7 +86,7 @@
           </div>
         </div>
 
-        <!-- Posts - Mobile Optimized -->
+        <!-- Posts - PWA Optimized -->
         <div v-if="posts.length > 0" class="w-full">
           <div v-for="post in posts" :key="post.id" class="w-full bg-black border-b border-gray-800">
             <!-- Post Header -->
@@ -107,23 +107,26 @@
               </button>
             </div>
 
-            <!-- Post Image - Mobile Optimized -->
-            <div class="w-full bg-black flex items-center justify-center overflow-hidden">
-              <img 
-                v-if="post.image_url" 
-                :src="post.image_url" 
-                :alt="post.content" 
-                class="w-full h-auto min-h-[300px] max-h-[90vh] object-contain"
-                loading="lazy"
-                style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;"
-              >
+            <!-- Post Image - PWA FIXED -->
+            <div class="w-full bg-black flex items-center justify-center p-0" style="contain: layout style paint;">
+              <div class="w-full flex justify-center items-center min-h-[200px]">
+                <img 
+                  v-if="post.image_url" 
+                  :src="post.image_url" 
+                  :alt="post.content" 
+                  class="max-w-full max-h-[80vh] w-auto h-auto"
+                  style="contain: layout style paint;"
+                  loading="lazy"
+                  @load="handleImageLoad"
+                >
+              </div>
               <div v-else class="text-gray-500 text-lg flex flex-col items-center py-20 w-full">
                 <span class="text-4xl mb-2">📸</span>
-                <span class="text-white">{{ post.content }}</span>
+                <span class="text-white text-center px-4">{{ post.content }}</span>
               </div>
             </div>
 
-            <!-- Post Actions - Mobile Optimized -->
+            <!-- Post Actions -->
             <div class="p-4 space-y-3 w-full">
               <div class="flex items-center justify-between w-full">
                 <div class="flex items-center space-x-4">
@@ -212,6 +215,12 @@ const selectedPostId = ref(null)
 const posts = ref([])
 const userLikes = ref([])
 
+// Resim yükleme handler
+const handleImageLoad = (event) => {
+  console.log('Resim yüklendi:', event.target.src)
+  // Resim yüklendikten sonra ekstra işlemler yapabilirsin
+}
+
 // Zaman formatlama
 const formatTime = (timestamp) => {
   if (!timestamp) return 'Yakın zamanda'
@@ -234,48 +243,22 @@ const toggleLike = async (postId) => {
   console.log('Beğeni tıklandı:', postId)
   
   try {
-    // Önce UI'ı güncelle (anında feedback)
     const postIndex = posts.value.findIndex(p => p.id === postId)
     if (postIndex !== -1) {
       const post = posts.value[postIndex]
       
       if (userLikes.value.includes(postId)) {
-        // Beğeniyi kaldır
         userLikes.value = userLikes.value.filter(id => id !== postId)
         post.likes_count = Math.max((post.likes_count || 1) - 1, 0)
-        console.log('Beğeni kaldırıldı')
       } else {
-        // Beğeni ekle
         userLikes.value.push(postId)
         post.likes_count = (post.likes_count || 0) + 1
-        console.log('Beğeni eklendi')
       }
     }
 
-    // Backend işlemi
-    console.log('Backend beğeni işlemi başlıyor...')
-    const result = await likes.toggleLike(postId)
-    console.log('Backend cevabı:', result)
-
-    console.log('Beğeni işlemi tamamlandı')
-    
+    await likes.toggleLike(postId)
   } catch (error) {
     console.error('BEĞENİ HATASI:', error)
-    
-    // Hata durumunda UI'ı geri al
-    const postIndex = posts.value.findIndex(p => p.id === postId)
-    if (postIndex !== -1) {
-      const post = posts.value[postIndex]
-      
-      if (userLikes.value.includes(postId)) {
-        userLikes.value = userLikes.value.filter(id => id !== postId)
-        post.likes_count = Math.max((post.likes_count || 1) - 1, 0)
-      } else {
-        userLikes.value.push(postId)
-        post.likes_count = (post.likes_count || 0) + 1
-      }
-    }
-    
     alert('Beğeni işlemi başarısız: ' + error.message)
   }
 }
@@ -284,26 +267,20 @@ const toggleLike = async (postId) => {
 const showComments = (postId) => {
   selectedPostId.value = postId
   showCommentsModal.value = true
-  console.log('Yorumlar açılıyor, post:', postId)
 }
 
 // Yeni yorum eklendiğinde
 const handleCommentAdded = (comment) => {
-  console.log('Yeni yorum eklendi:', comment)
-  
-  // İlgili post'un yorum sayısını güncelle
   const postIndex = posts.value.findIndex(p => p.id === comment.post_id)
   if (postIndex !== -1) {
     const post = posts.value[postIndex]
     post.comments_count = (post.comments_count || 0) + 1
-    console.log('Yorum sayısı güncellendi:', post.comments_count)
   }
 }
 
 // Post'ları veritabanından çek
 const fetchPosts = async () => {
   try {
-    console.log('Postlar çekiliyor...')
     const { data, error } = await supabase
       .from('posts')
       .select('*')
@@ -311,12 +288,9 @@ const fetchPosts = async () => {
 
     if (error) throw error
     posts.value = data || []
-    console.log('Postlar çekildi:', posts.value.length)
 
-    // Kullanıcının beğendiklerini getir
     if (auth.user) {
       userLikes.value = await likes.getUserLikes()
-      console.log('Kullanıcı beğenileri:', userLikes.value)
     }
   } catch (error) {
     console.error('Postları çekerken hata:', error)
@@ -326,11 +300,9 @@ const fetchPosts = async () => {
 // Yeni post oluşturulduğunda
 const handlePostCreated = (newPost) => {
   posts.value.unshift(newPost)
-  console.log('Yeni post eklendi:', newPost)
 }
 
 const handleLoginSuccess = (user) => {
-  console.log('Giriş başarılı:', user)
   fetchPosts()
 }
 
@@ -385,14 +357,21 @@ onMounted(() => {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Mobile optimized image rendering */
+/* PWA Image Optimization */
 img {
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Critical PWA fix for images */
+.image-container {
+  contain: layout style paint;
 }
 </style>
