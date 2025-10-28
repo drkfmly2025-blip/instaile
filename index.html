@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     
-    <!-- CRITICAL VIEWPORT FIX -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- CRITICAL PWA VIEWPORT FIX -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
     <meta name="theme-color" content="#FF6B8B" />
     <meta name="description" content="instaile - Anı Paylaşım Platformu" />
@@ -24,20 +24,6 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Mobile Fix CSS -->
-    <style>
-      /* Prevent zoom on input focus */
-      input, textarea, select {
-        font-size: 16px !important;
-      }
-      
-      /* Ensure proper touch targets */
-      button, [role="button"] {
-        min-height: 44px;
-        min-width: 44px;
-      }
-    </style>
   </head>
   <body class="bg-black">
     <div id="app"></div>
