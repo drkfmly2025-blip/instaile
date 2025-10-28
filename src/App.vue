@@ -94,7 +94,7 @@
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5 min-w-[40px] min-h-[40px]">
                   <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
-                    <span class="text-sm font-semibold text-white">{{ post.display_name?.charAt(0) || 'K' }}</span>
+                    <span class="text-sm font-semibold text-white">{{ post.display_name?.charAt(0)?.toUpperCase() || 'K' }}</span>
                   </div>
                 </div>
                 <div>
@@ -274,7 +274,7 @@ const handleCommentAdded = (comment) => {
   }
 }
 
-// Post'ları veritabanından çek - GÜNCELLENMİŞ
+// Post'ları veritabanından çek - PROFİL BİLGİLERİYLE
 const fetchPosts = async () => {
   try {
     console.log('Postlar çekiliyor...')
@@ -285,33 +285,88 @@ const fetchPosts = async () => {
 
     if (error) throw error
     
-    // Basit çözüm - user_id'nin ilk 6 karakterini kullan
-    posts.value = (data || []).map(post => ({
-      ...post,
-      display_name: `Kullanıcı_${post.user_id?.substring(0, 6) || 'xxx'}`
-    }))
+    // Her post için kullanıcı profil bilgilerini çek
+    const postsWithUsers = await Promise.all(
+      (data || []).map(async (post) => {
+        try {
+          // Kullanıcı profil bilgilerini çek
+          const { data: userData, error: userError } = await supabase
+            .from('profiles')
+            .select('username, email')
+            .eq('id', post.user_id)
+            .single()
+
+          if (userError) throw userError
+
+          return {
+            ...post,
+            display_name: userData?.username || 
+                         userData?.email?.split('@')[0] || 
+                         `Kullanıcı_${post.user_id?.substring(0, 6)}`
+          }
+        } catch (userError) {
+          console.log('Profil bilgisi alınamadı, user_id kullanılıyor:', userError)
+          return {
+            ...post,
+            display_name: `Kullanıcı_${post.user_id?.substring(0, 6)}`
+          }
+        }
+      })
+    )
     
+    posts.value = postsWithUsers
     console.log('Postlar çekildi:', posts.value)
 
+    // Kullanıcının beğendiklerini getir
     if (auth.user) {
       userLikes.value = await likes.getUserLikes()
+      console.log('Kullanıcı beğenileri:', userLikes.value)
     }
   } catch (error) {
     console.error('Postları çekerken hata:', error)
   }
 }
 
-// Yeni post oluşturulduğunda
-const handlePostCreated = (newPost) => {
-  // Yeni post'a da display_name ekle
-  const postWithName = {
-    ...newPost,
-    display_name: `Kullanıcı_${newPost.user_id?.substring(0, 6) || 'xxx'}`
+// Yeni post oluşturulduğunda - PROFİL BİLGİLERİYLE
+const handlePostCreated = async (newPost) => {
+  try {
+    // Yeni post için kullanıcı profil bilgilerini çek
+    const { data: userData, error: userError } = await supabase
+      .from('profiles')
+      .select('username, email')
+      .eq('id', newPost.user_id)
+      .single()
+
+    let displayName
+    if (userError) {
+      console.log('Profil bilgisi alınamadı:', userError)
+      displayName = `Kullanıcı_${newPost.user_id?.substring(0, 6)}`
+    } else {
+      displayName = userData?.username || 
+                   userData?.email?.split('@')[0] || 
+                   `Kullanıcı_${newPost.user_id?.substring(0, 6)}`
+    }
+
+    const postWithUser = {
+      ...newPost,
+      display_name: displayName
+    }
+    
+    posts.value.unshift(postWithUser)
+    console.log('Yeni post eklendi:', postWithUser)
+  } catch (error) {
+    console.error('Yeni post eklenirken hata:', error)
+    // Hata durumunda fallback
+    const postWithDefault = {
+      ...newPost,
+      display_name: `Kullanıcı_${newPost.user_id?.substring(0, 6)}`
+    }
+    posts.value.unshift(postWithDefault)
   }
-  posts.value.unshift(postWithName)
 }
 
 const handleLoginSuccess = (user) => {
+  console.log('Giriş başarılı:', user)
   fetchPosts()
 }
 
