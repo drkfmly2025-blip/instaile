@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-black">
+  <div class="min-h-screen bg-black w-full">
     <!-- Auth durumuna göre içerik -->
-    <div v-if="auth.isLoading" class="min-h-screen flex items-center justify-center bg-black">
+    <div v-if="auth.isLoading" class="min-h-screen flex items-center justify-center bg-black w-full">
       <div class="text-center">
         <div class="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
         <p class="text-gray-300">Yükleniyor...</p>
@@ -9,7 +9,7 @@
     </div>
 
     <!-- Giriş yapılmamışsa auth göster -->
-    <div v-else-if="!auth.user" class="bg-black min-h-screen">
+    <div v-else-if="!auth.user" class="bg-black min-h-screen w-full">
       <Login 
         v-if="showLogin" 
         @switch-to-register="showLogin = false"
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Giriş yapılmışsa ana uygulama -->
-    <div v-else class="bg-black">
+    <div v-else class="bg-black w-full">
       <!-- Create Post Modal -->
       <CreatePost 
         v-if="showCreatePost"
@@ -40,8 +40,8 @@
       />
 
       <!-- Profesyonel Navbar -->
-      <nav class="bg-black border-b border-gray-800 sticky top-0 z-50">
-        <div class="max-w-lg mx-auto px-4">
+      <nav class="bg-black border-b border-gray-800 sticky top-0 z-50 w-full safe-area-top">
+        <div class="w-full px-4 safe-area-padding">
           <div class="flex items-center justify-between h-14">
             <!-- Logo -->
             <div class="flex items-center space-x-2">
@@ -72,10 +72,10 @@
         </div>
       </nav>
 
-      <!-- Ana içerik - Instagram tarzı tek sütun -->
-      <main class="max-w-lg mx-auto pb-20">
+      <!-- Ana içerik - Tüm cihazlara uyumlu -->
+      <main class="w-full max-w-full pb-20 safe-area-padding">
         <!-- Stories Section -->
-        <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800">
+        <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800 w-full">
           <div v-for="i in 8" :key="i" class="flex flex-col items-center space-y-1 flex-shrink-0">
             <div class="w-14 h-14 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5">
               <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
@@ -87,10 +87,10 @@
         </div>
 
         <!-- Posts - Instagram tarzı tek tek -->
-        <div v-if="posts.length > 0" class="flex flex-col gap-6">
-          <div v-for="post in posts" :key="post.id" class="bg-black border-b border-gray-800">
+        <div v-if="posts.length > 0" class="w-full">
+          <div v-for="post in posts" :key="post.id" class="w-full bg-black border-b border-gray-800">
             <!-- Post Header -->
-            <div class="flex items-center justify-between p-4">
+            <div class="flex items-center justify-between p-4 w-full">
               <div class="flex items-center space-x-3">
                 <div class="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5">
                   <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
@@ -107,23 +107,24 @@
               </button>
             </div>
 
-            <!-- Post Image - Full width -->
-            <div class="w-full aspect-square bg-black flex items-center justify-center">
+            <!-- Post Image - Tam görünüm -->
+            <div class="w-full bg-black flex items-center justify-center">
               <img 
                 v-if="post.image_url" 
                 :src="post.image_url" 
                 :alt="post.content" 
-                class="w-full h-full object-contain"
+                class="w-full h-auto max-h-[80vh] object-scale-down"
+                loading="lazy"
               >
-              <div v-else class="text-gray-500 text-lg flex flex-col items-center">
+              <div v-else class="text-gray-500 text-lg flex flex-col items-center py-20 w-full">
                 <span class="text-4xl mb-2">📸</span>
                 <span class="text-white">{{ post.content }}</span>
               </div>
             </div>
 
             <!-- Post Actions -->
-            <div class="p-4 space-y-3">
-              <div class="flex items-center justify-between">
+            <div class="p-4 space-y-3 w-full">
+              <div class="flex items-center justify-between w-full">
                 <div class="flex items-center space-x-4">
                   <button 
                     @click="toggleLike(post.id)"
@@ -171,7 +172,7 @@
         </div>
 
         <!-- Boş state -->
-        <div v-else class="text-center py-12">
+        <div v-else class="text-center py-12 w-full">
           <div class="text-gray-600 mb-4">
             <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -355,3 +356,24 @@ onMounted(() => {
   })
 })
 </script>
+
+<style scoped>
+/* Safe area support for mobile devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-padding {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Ensure full width on all devices */
+.w-full {
+  width: 100% !important;
+}
+
+.max-w-full {
+  max-width: 100% !important;
+}
+</style>
