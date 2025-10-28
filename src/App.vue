@@ -87,8 +87,8 @@
         </div>
 
         <!-- Posts - Instagram tarzı tek tek -->
-        <div v-if="posts.length > 0">
-          <div v-for="post in posts" :key="post.id" class="bg-black border-b border-gray-800 pb-4 mb-6">
+        <div v-if="posts.length > 0" class="flex flex-col gap-6">
+          <div v-for="post in posts" :key="post.id" class="bg-black border-b border-gray-800">
             <!-- Post Header -->
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center space-x-3">
@@ -108,12 +108,12 @@
             </div>
 
             <!-- Post Image - Full width -->
-            <div class="w-full aspect-square bg-gray-900 flex items-center justify-center">
+            <div class="w-full aspect-square bg-black flex items-center justify-center">
               <img 
                 v-if="post.image_url" 
                 :src="post.image_url" 
                 :alt="post.content" 
-                class="w-full h-full object-contain bg-black"
+                class="w-full h-full object-contain"
               >
               <div v-else class="text-gray-500 text-lg flex flex-col items-center">
                 <span class="text-4xl mb-2">📸</span>
@@ -355,4 +355,3 @@ onMounted(() => {
   })
 })
 </script>
-// test //
