@@ -113,7 +113,7 @@
                 v-if="post.image_url" 
                 :src="post.image_url" 
                 :alt="post.content" 
-                class="max-w-full max-h-[80vh] w-auto h-auto"
+                class="max-w-full max-h-[80vh] w-auto h-auto object-contain"
                 loading="lazy"
                 @load="handleImageLoad"
               >
@@ -202,15 +202,6 @@ import Login from './components/Login.vue'
 import Register from './components/Register.vue'
 import CreatePost from './components/CreatePost.vue'
 import CommentsModal from './components/CommentsModal.vue'
-
-const auth = useAuthStore()
-const likes = useLikesStore()
-const showLogin = ref(true)
-const showCreatePost = ref(false)
-const showCommentsModal = ref(false)
-const selectedPostId = ref(null)
-const posts = ref([])
-const userLikes = ref([])
 
 // Resim yükleme handler
 const handleImageLoad = (event) => {
@@ -362,5 +353,8 @@ img {
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 80vh;
 }
 </style>
