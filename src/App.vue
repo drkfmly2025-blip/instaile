@@ -274,7 +274,7 @@ const handleCommentAdded = (comment) => {
   }
 }
 
-// Post'ları veritabanından çek - PROFİL BİLGİLERİYLE
+// Post'ları veritabanından çek - KULLANICI İSİMLERİYLE
 const fetchPosts = async () => {
   try {
     console.log('Postlar çekiliyor...')
@@ -285,27 +285,29 @@ const fetchPosts = async () => {
 
     if (error) throw error
     
-    // Her post için kullanıcı profil bilgilerini çek
+    // Her post için kullanıcı bilgilerini auth.users'dan çek
     const postsWithUsers = await Promise.all(
       (data || []).map(async (post) => {
         try {
-          // Kullanıcı profil bilgilerini çek
+          // Kullanıcı bilgilerini auth.users'dan çek
           const { data: userData, error: userError } = await supabase
-            .from('profiles')
-            .select('username, email')
+            .from('auth.users')
+            .select('raw_user_meta_data, email')
             .eq('id', post.user_id)
             .single()
 
           if (userError) throw userError
 
+          // username'i raw_user_meta_data'dan al
+          const username = userData?.raw_user_meta_data?.username
+          const email = userData?.email
+          
           return {
             ...post,
-            display_name: userData?.username || 
-                         userData?.email?.split('@')[0] || 
-                         `Kullanıcı_${post.user_id?.substring(0, 6)}`
+            display_name: username || email?.split('@')[0] || `Kullanıcı_${post.user_id?.substring(0, 6)}`
           }
         } catch (userError) {
-          console.log('Profil bilgisi alınamadı, user_id kullanılıyor:', userError)
+          console.log('Kullanıcı bilgisi alınamadı:', userError)
           return {
             ...post,
             display_name: `Kullanıcı_${post.user_id?.substring(0, 6)}`
@@ -327,24 +329,24 @@ const fetchPosts = async () => {
   }
 }
 
-// Yeni post oluşturulduğunda - PROFİL BİLGİLERİYLE
+// Yeni post oluşturulduğunda - KULLANICI İSİMLERİYLE
 const handlePostCreated = async (newPost) => {
   try {
-    // Yeni post için kullanıcı profil bilgilerini çek
+    // Yeni post için kullanıcı bilgilerini auth.users'dan çek
     const { data: userData, error: userError } = await supabase
-      .from('profiles')
-      .select('username, email')
+      .from('auth.users')
+      .select('raw_user_meta_data, email')
       .eq('id', newPost.user_id)
       .single()
 
     let displayName
     if (userError) {
-      console.log('Profil bilgisi alınamadı:', userError)
+      console.log('Kullanıcı bilgisi alınamadı:', userError)
       displayName = `Kullanıcı_${newPost.user_id?.substring(0, 6)}`
     } else {
-      displayName = userData?.username || 
-                   userData?.email?.split('@')[0] || 
-                   `Kullanıcı_${newPost.user_id?.substring(0, 6)}`
+      const username = userData?.raw_user_meta_data?.username
+      const email = userData?.email
+      displayName = username || email?.split('@')[0] || `Kullanıcı_${newPost.user_id?.substring(0, 6)}`
     }
 
     const postWithUser = {
