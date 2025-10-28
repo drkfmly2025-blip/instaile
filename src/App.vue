@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen bg-black w-full overflow-x-hidden">
+    <!-- Auth durumuna göre içerik -->
     <div v-if="auth.isLoading" class="min-h-screen flex items-center justify-center bg-black w-full">
       <div class="text-center">
         <div class="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -7,6 +8,7 @@
       </div>
     </div>
 
+    <!-- Giriş yapılmamışsa auth göster -->
     <div v-else-if="!auth.user" class="bg-black min-h-screen w-full">
       <Login 
         v-if="showLogin" 
@@ -20,13 +22,16 @@
       />
     </div>
 
+    <!-- Giriş yapılmışsa ana uygulama -->
     <div v-else class="bg-black w-full">
+      <!-- Create Post Modal -->
       <CreatePost 
         v-if="showCreatePost"
         @close="showCreatePost = false"
         @post-created="handlePostCreated"
       />
 
+      <!-- Comments Modal -->
       <CommentsModal 
         v-if="showCommentsModal"
         :postId="selectedPostId"
@@ -34,9 +39,11 @@
         @comment-added="handleCommentAdded"
       />
 
+      <!-- Profesyonel Navbar -->
       <nav class="bg-black border-b border-gray-800 sticky top-0 z-50 w-full safe-area-top">
         <div class="w-full px-4 safe-area-padding">
           <div class="flex items-center justify-between h-14 min-h-[44px]">
+            <!-- Logo -->
             <div class="flex items-center space-x-2">
               <div class="w-8 h-8 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-lg flex items-center justify-center min-w-[32px] min-h-[32px]">
                 <span class="text-white font-bold text-xs">i</span>
@@ -44,6 +51,7 @@
               <h1 class="text-lg font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">instaile</h1>
             </div>
             
+            <!-- Create Post Butonu -->
             <button 
               @click="showCreatePost = true"
               class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-pink-600 hover:to-purple-700 transition-all flex items-center space-x-2 min-h-[44px]"
@@ -51,6 +59,7 @@
               <span>+ Yeni Gönderi</span>
             </button>
 
+            <!-- Kullanıcı bilgisi ve çıkış -->
             <div class="flex items-center space-x-3">
               <button 
                 @click="handleSignOut"
@@ -63,7 +72,9 @@
         </div>
       </nav>
 
+      <!-- Ana içerik - Optimized -->
       <main class="w-full max-w-full pb-20 safe-area-padding">
+        <!-- Stories Section -->
         <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800 w-full no-scrollbar">
           <div v-for="i in 8" :key="i" class="flex flex-col items-center space-y-1 flex-shrink-0">
             <div class="w-14 h-14 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5 min-w-[56px] min-h-[56px]">
@@ -75,17 +86,19 @@
           </div>
         </div>
 
-        <div v-if="posts.length > 0" class="w-full">
-          <div v-for="post in posts" :key="post.id" class="w-full bg-black border-b border-gray-800">
+        <!-- Posts - TEK SÜTUN -->
+        <div v-if="posts.length > 0" style="display: flex; flex-direction: column; width: 100%;">
+          <div v-for="post in posts" :key="post.id" style="width: 100%; margin-bottom: 24px;" class="bg-black border-b border-gray-800">
+            <!-- Post Header -->
             <div class="flex items-center justify-between p-4 w-full">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5 min-w-[40px] min-h-[40px]">
                   <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
-                    <span class="text-sm font-semibold text-white">{{ post.username?.charAt(0) || 'U' }}</span>
+                    <span class="text-sm font-semibold text-white">{{ post.display_name?.charAt(0) || 'K' }}</span>
                   </div>
                 </div>
                 <div>
-                  <h3 class="font-semibold text-white text-base">{{ post.username || 'Kullanıcı' }}</h3>
+                  <h3 class="font-semibold text-white text-base">{{ post.display_name }}</h3>
                   <p class="text-xs text-gray-400">{{ post.location || 'Konum belirtilmemiş' }}</p>
                 </div>
               </div>
@@ -94,6 +107,7 @@
               </button>
             </div>
 
+            <!-- Post Image - OPTIMIZED -->
             <div class="image-container">
               <img 
                 v-if="post.image_url" 
@@ -109,6 +123,7 @@
               </div>
             </div>
 
+            <!-- Post Actions -->
             <div class="p-4 space-y-3 w-full">
               <div class="flex items-center justify-between w-full">
                 <div class="flex items-center space-x-4">
@@ -139,7 +154,7 @@
               </div>
 
               <div class="text-base">
-                <span class="font-semibold text-white mr-2">{{ post.username || 'Kullanıcı' }}</span>
+                <span class="font-semibold text-white mr-2">{{ post.display_name }}</span>
                 <span class="text-gray-200">{{ post.content }}</span>
               </div>
 
@@ -157,6 +172,7 @@
           </div>
         </div>
 
+        <!-- Boş state -->
         <div v-else class="text-center py-12 w-full px-4">
           <div class="text-gray-600 mb-4">
             <svg class="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,16 +274,24 @@ const handleCommentAdded = (comment) => {
   }
 }
 
-// Post'ları veritabanından çek
+// Post'ları veritabanından çek - GÜNCELLENMİŞ
 const fetchPosts = async () => {
   try {
+    console.log('Postlar çekiliyor...')
     const { data, error } = await supabase
       .from('posts')
       .select('*')
       .order('created_at', { ascending: false })
 
     if (error) throw error
-    posts.value = data || []
+    
+    // Basit çözüm - user_id'nin ilk 6 karakterini kullan
+    posts.value = (data || []).map(post => ({
+      ...post,
+      display_name: `Kullanıcı_${post.user_id?.substring(0, 6) || 'xxx'}`
+    }))
+    
+    console.log('Postlar çekildi:', posts.value)
 
     if (auth.user) {
       userLikes.value = await likes.getUserLikes()
@@ -279,7 +303,12 @@ const fetchPosts = async () => {
 
 // Yeni post oluşturulduğunda
 const handlePostCreated = (newPost) => {
-  posts.value.unshift(newPost)
+  // Yeni post'a da display_name ekle
+  const postWithName = {
+    ...newPost,
+    display_name: `Kullanıcı_${newPost.user_id?.substring(0, 6) || 'xxx'}`
+  }
+  posts.value.unshift(postWithName)
 }
 
 const handleLoginSuccess = (user) => {
@@ -340,22 +369,22 @@ onMounted(() => {
   scrollbar-width: none;
 }
 
-/* **DÜZENLENMİŞ GÖRSEL STİLLERİ** - Kırpılmayı önlemek için max-height kısıtlamaları kaldırıldı */
+/* OPTIMIZED IMAGE STYLES */
 .image-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* max-height: 100vh; <-- KALDIRILDI */
+  max-height: 100vh;
   overflow: hidden;
   background-color: #000000;
   width: 100%;
 }
 
 .responsive-image {
-  object-fit: contain; /* En boy oranını korur */
+  object-fit: contain;
   width: 100%;
-  height: auto; /* Yüksekliği resmin en boy oranına göre ayarlar */
-  /* max-height: 100vh; <-- KALDIRILDI */
+  height: auto;
+  max-height: 100vh;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
@@ -378,23 +407,23 @@ onMounted(() => {
 /* Mobile optimizations */
 @media (max-width: 640px) {
   .responsive-image {
-    max-height: none; /* Kırpma engellendi */
+    max-height: 70vh;
     object-fit: contain;
   }
   
   .image-container {
-    max-height: none; /* Kırpma engellendi */
+    max-height: 70vh;
   }
 }
 
 /* Desktop optimizations */
 @media (min-width: 1024px) {
   .responsive-image {
-    max-height: none; /* Kırpma engellendi */
+    max-height: 80vh;
   }
   
   .image-container {
-    max-height: none; /* Kırpma engellendi */
+    max-height: 80vh;
   }
 }
 
