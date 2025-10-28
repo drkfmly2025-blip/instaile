@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-black w-full">
+  <div class="min-h-screen bg-black w-full overflow-x-hidden">
     <!-- Auth durumuna göre içerik -->
     <div v-if="auth.isLoading" class="min-h-screen flex items-center justify-center bg-black w-full">
       <div class="text-center">
@@ -42,10 +42,10 @@
       <!-- Profesyonel Navbar -->
       <nav class="bg-black border-b border-gray-800 sticky top-0 z-50 w-full safe-area-top">
         <div class="w-full px-4 safe-area-padding">
-          <div class="flex items-center justify-between h-14">
+          <div class="flex items-center justify-between h-14 min-h-[44px]">
             <!-- Logo -->
             <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+              <div class="w-8 h-8 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-lg flex items-center justify-center min-w-[32px] min-h-[32px]">
                 <span class="text-white font-bold text-xs">i</span>
               </div>
               <h1 class="text-lg font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">instaile</h1>
@@ -54,7 +54,7 @@
             <!-- Create Post Butonu -->
             <button 
               @click="showCreatePost = true"
-              class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-pink-600 hover:to-purple-700 transition-all flex items-center space-x-2"
+              class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-pink-600 hover:to-purple-700 transition-all flex items-center space-x-2 min-h-[44px]"
             >
               <span>+ Yeni Gönderi</span>
             </button>
@@ -63,7 +63,7 @@
             <div class="flex items-center space-x-3">
               <button 
                 @click="handleSignOut"
-                class="bg-gray-800 text-gray-300 px-3 py-1 rounded-lg text-sm font-medium hover:bg-gray-700 transition-all"
+                class="bg-gray-800 text-gray-300 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-all min-h-[44px]"
               >
                 Çıkış
               </button>
@@ -72,12 +72,12 @@
         </div>
       </nav>
 
-      <!-- Ana içerik - Tüm cihazlara uyumlu -->
+      <!-- Ana içerik - Mobile Optimized -->
       <main class="w-full max-w-full pb-20 safe-area-padding">
         <!-- Stories Section -->
-        <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800 w-full">
+        <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800 w-full no-scrollbar">
           <div v-for="i in 8" :key="i" class="flex flex-col items-center space-y-1 flex-shrink-0">
-            <div class="w-14 h-14 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5">
+            <div class="w-14 h-14 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5 min-w-[56px] min-h-[56px]">
               <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
                 <span class="text-xs font-semibold text-white">K{{ i }}</span>
               </div>
@@ -86,35 +86,36 @@
           </div>
         </div>
 
-        <!-- Posts - Instagram tarzı tek tek -->
+        <!-- Posts - Mobile Optimized -->
         <div v-if="posts.length > 0" class="w-full">
           <div v-for="post in posts" :key="post.id" class="w-full bg-black border-b border-gray-800">
             <!-- Post Header -->
             <div class="flex items-center justify-between p-4 w-full">
               <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5">
+                <div class="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5 min-w-[40px] min-h-[40px]">
                   <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
-                    <span class="text-xs font-semibold text-white">{{ post.username?.charAt(0) || 'U' }}</span>
+                    <span class="text-sm font-semibold text-white">{{ post.username?.charAt(0) || 'U' }}</span>
                   </div>
                 </div>
                 <div>
-                  <h3 class="font-semibold text-white text-sm">{{ post.username || 'Kullanıcı' }}</h3>
+                  <h3 class="font-semibold text-white text-base">{{ post.username || 'Kullanıcı' }}</h3>
                   <p class="text-xs text-gray-400">{{ post.location || 'Konum belirtilmemiş' }}</p>
                 </div>
               </div>
-              <button class="text-gray-400 hover:text-white">
+              <button class="text-gray-400 hover:text-white text-xl min-w-[44px] min-h-[44px] flex items-center justify-center">
                 •••
               </button>
             </div>
 
-            <!-- Post Image - Tam görünüm -->
-            <div class="w-full bg-black flex items-center justify-center">
+            <!-- Post Image - Mobile Optimized -->
+            <div class="w-full bg-black flex items-center justify-center overflow-hidden">
               <img 
                 v-if="post.image_url" 
                 :src="post.image_url" 
                 :alt="post.content" 
-                class="w-full h-auto max-h-[80vh] object-scale-down"
+                class="w-full h-auto min-h-[300px] max-h-[90vh] object-contain"
                 loading="lazy"
+                style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;"
               >
               <div v-else class="text-gray-500 text-lg flex flex-col items-center py-20 w-full">
                 <span class="text-4xl mb-2">📸</span>
@@ -122,49 +123,49 @@
               </div>
             </div>
 
-            <!-- Post Actions -->
+            <!-- Post Actions - Mobile Optimized -->
             <div class="p-4 space-y-3 w-full">
               <div class="flex items-center justify-between w-full">
                 <div class="flex items-center space-x-4">
                   <button 
                     @click="toggleLike(post.id)"
-                    class="transition-all duration-300 transform hover:scale-110 text-2xl"
+                    class="transition-all duration-300 transform hover:scale-110 text-3xl min-w-[44px] min-h-[44px] flex items-center justify-center"
                     :class="userLikes.includes(post.id) ? 'text-red-500' : 'text-white hover:text-red-400'"
                   >
                     {{ userLikes.includes(post.id) ? '❤️' : '🤍' }}
                   </button>
                   <button 
                     @click="showComments(post.id)"
-                    class="text-white hover:text-blue-400 transition-colors text-2xl transform hover:scale-110"
+                    class="text-white hover:text-blue-400 transition-colors text-3xl transform hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center"
                   >
                     💬
                   </button>
-                  <button class="text-white hover:text-green-400 transition-colors text-2xl transform hover:scale-110">
+                  <button class="text-white hover:text-green-400 transition-colors text-3xl transform hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center">
                     📤
                   </button>
                 </div>
-                <button class="text-white hover:text-yellow-400 transition-colors text-2xl transform hover:scale-110">
+                <button class="text-white hover:text-yellow-400 transition-colors text-3xl transform hover:scale-110 min-w-[44px] min-h-[44px] flex items-center justify-center">
                   🔖
                 </button>
               </div>
 
-              <div class="text-sm font-semibold text-white">
+              <div class="text-base font-semibold text-white">
                 {{ post.likes_count || 0 }} beğenme
               </div>
 
-              <div class="text-sm">
+              <div class="text-base">
                 <span class="font-semibold text-white mr-2">{{ post.username || 'Kullanıcı' }}</span>
                 <span class="text-gray-200">{{ post.content }}</span>
               </div>
 
               <div 
                 @click="showComments(post.id)"
-                class="text-sm text-gray-400 cursor-pointer hover:text-gray-300"
+                class="text-base text-gray-400 cursor-pointer hover:text-gray-300 py-2"
               >
                 {{ post.comments_count || 0 }} yorumun tümünü gör
               </div>
 
-              <div class="text-xs text-gray-500">
+              <div class="text-sm text-gray-500 py-1">
                 {{ formatTime(post.created_at) }}
               </div>
             </div>
@@ -172,17 +173,17 @@
         </div>
 
         <!-- Boş state -->
-        <div v-else class="text-center py-12 w-full">
+        <div v-else class="text-center py-12 w-full px-4">
           <div class="text-gray-600 mb-4">
-            <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-white mb-2">Henüz gönderi yok</h3>
-          <p class="text-gray-400 mb-4">İlk gönderiyi paylaşmak için "Yeni Gönderi" butonuna tıkla!</p>
+          <h3 class="text-xl font-semibold text-white mb-3">Henüz gönderi yok</h3>
+          <p class="text-gray-400 mb-6 text-base">İlk gönderiyi paylaşmak için "Yeni Gönderi" butonuna tıkla!</p>
           <button 
             @click="showCreatePost = true"
-            class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:from-pink-600 hover:to-purple-700 transition-all"
+            class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-4 rounded-lg font-medium hover:from-pink-600 hover:to-purple-700 transition-all text-base min-h-[52px]"
           >
             İlk Gönderiyi Paylaş
           </button>
@@ -375,5 +376,23 @@ onMounted(() => {
 
 .max-w-full {
   max-width: 100% !important;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Mobile optimized image rendering */
+img {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 </style>
