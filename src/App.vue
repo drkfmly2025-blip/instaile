@@ -72,7 +72,7 @@
         </div>
       </nav>
 
-      <!-- Ana içerik - Instagram Style -->
+      <!-- Ana içerik - Optimized -->
       <main class="w-full max-w-full pb-20 safe-area-padding">
         <!-- Stories Section -->
         <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800 w-full no-scrollbar">
@@ -86,7 +86,7 @@
           </div>
         </div>
 
-        <!-- Posts - Instagram Style -->
+        <!-- Posts - Optimized -->
         <div v-if="posts.length > 0" class="w-full">
           <div v-for="post in posts" :key="post.id" class="w-full bg-black border-b border-gray-800">
             <!-- Post Header -->
@@ -107,17 +107,17 @@
               </button>
             </div>
 
-            <!-- Post Image - INSTAGRAM STYLE (ORANLARI KORU) -->
-            <div class="w-full bg-black flex justify-center items-start">
+            <!-- Post Image - OPTIMIZED -->
+            <div class="image-container">
               <img 
                 v-if="post.image_url" 
                 :src="post.image_url" 
                 :alt="post.content" 
-                class="max-w-full max-h-[80vh] w-auto h-auto object-contain"
+                class="responsive-image"
                 loading="lazy"
                 @load="handleImageLoad"
               >
-              <div v-else class="text-gray-500 text-lg flex flex-col items-center justify-center py-20 w-full min-h-[200px]">
+              <div v-else class="no-image-placeholder">
                 <span class="text-4xl mb-2">📸</span>
                 <span class="text-white text-center px-4">{{ post.content }}</span>
               </div>
@@ -202,6 +202,15 @@ import Login from './components/Login.vue'
 import Register from './components/Register.vue'
 import CreatePost from './components/CreatePost.vue'
 import CommentsModal from './components/CommentsModal.vue'
+
+const auth = useAuthStore()
+const likes = useLikesStore()
+const showLogin = ref(true)
+const showCreatePost = ref(false)
+const showCommentsModal = ref(false)
+const selectedPostId = ref(null)
+const posts = ref([])
+const userLikes = ref([])
 
 // Resim yükleme handler
 const handleImageLoad = (event) => {
@@ -337,24 +346,89 @@ onMounted(() => {
   max-width: 100% !important;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide scrollbar */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-/* Mobile optimized image rendering */
-img {
+/* OPTIMIZED IMAGE STYLES */
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 100vh;
+  overflow: hidden;
+  background-color: #000000;
+  width: 100%;
+}
+
+.responsive-image {
+  object-fit: contain;
+  width: 100%;
+  height: auto;
+  max-height: 100vh;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
-  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.no-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: #6b7280;
+  font-size: 1.125rem;
+  width: 100%;
+  min-height: 200px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .responsive-image {
+    max-height: 70vh;
+    object-fit: contain; /* OR object-fit: cover; - hangisini istersen */
+  }
+  
+  .image-container {
+    max-height: 70vh;
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1024px) {
+  .responsive-image {
+    max-height: 80vh;
+  }
+  
+  .image-container {
+    max-height: 80vh;
+  }
+}
+
+/* Default app styles */
+#app {
   max-width: 100%;
-  max-height: 80vh;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #000000;
 }
 </style>
