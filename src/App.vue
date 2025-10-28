@@ -1,15 +1,15 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-black"> <!-- Arkaplanı siyah yapıyoruz -->
     <!-- Auth durumuna göre içerik -->
-    <div v-if="auth.isLoading" class="min-h-screen flex items-center justify-center">
+    <div v-if="auth.isLoading" class="min-h-screen flex items-center justify-center bg-black">
       <div class="text-center">
         <div class="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-gray-600">Yükleniyor...</p>
+        <p class="text-gray-300">Yükleniyor...</p>
       </div>
     </div>
 
     <!-- Giriş yapılmamışsa auth göster -->
-    <div v-else-if="!auth.user">
+    <div v-else-if="!auth.user" class="bg-black min-h-screen">
       <Login 
         v-if="showLogin" 
         @switch-to-register="showLogin = false"
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Giriş yapılmışsa ana uygulama -->
-    <div v-else>
+    <div v-else class="bg-black">
       <!-- Create Post Modal -->
       <CreatePost 
         v-if="showCreatePost"
@@ -40,15 +40,15 @@
       />
 
       <!-- Profesyonel Navbar -->
-      <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-3 sm:px-4">
-          <div class="flex items-center justify-between h-14 sm:h-16">
+      <nav class="bg-black border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-lg mx-auto px-4">
+          <div class="flex items-center justify-between h-14">
             <!-- Logo -->
             <div class="flex items-center space-x-2">
-              <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-                <span class="text-white font-bold text-xs sm:text-sm">i</span>
+              <div class="w-7 h-7 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                <span class="text-white font-bold text-xs">i</span>
               </div>
-              <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">instaile</h1>
+              <h1 class="text-lg font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">instaile</h1>
             </div>
             
             <!-- Create Post Butonu -->
@@ -61,10 +61,9 @@
 
             <!-- Kullanıcı bilgisi ve çıkış -->
             <div class="flex items-center space-x-3">
-              <span class="text-sm text-gray-700 hidden sm:block">Hoş geldin, {{ auth.user.email }}</span>
               <button 
                 @click="handleSignOut"
-                class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium hover:bg-gray-200 transition-all"
+                class="bg-gray-800 text-gray-300 px-3 py-1 rounded-lg text-sm font-medium hover:bg-gray-700 transition-all"
               >
                 Çıkış
               </button>
@@ -73,81 +72,105 @@
         </div>
       </nav>
 
-      <!-- Ana içerik -->
-      <main class="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+      <!-- Ana içerik - Instagram tarzı tek sütun -->
+      <main class="max-w-lg mx-auto pb-20">
         <!-- Stories Section -->
-        <div class="flex space-x-4 sm:space-x-6 mb-6 sm:mb-8 overflow-x-auto pb-3 sm:pb-4">
-          <div v-for="i in 8" :key="i" class="flex flex-col items-center space-y-1 sm:space-y-2 flex-shrink-0">
-            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5">
-              <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
-                <span class="text-xs font-semibold">K{{ i }}</span>
+        <div class="flex space-x-4 px-4 py-3 mb-2 overflow-x-auto bg-black border-b border-gray-800">
+          <div v-for="i in 8" :key="i" class="flex flex-col items-center space-y-1 flex-shrink-0">
+            <div class="w-14 h-14 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5">
+              <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
+                <span class="text-xs font-semibold text-white">K{{ i }}</span>
               </div>
             </div>
-            <span class="text-xs text-gray-600 truncate max-w-[50px] sm:max-w-[70px]">kullanici{{ i }}</span>
+            <span class="text-xs text-gray-400 truncate max-w-[60px]">kullanici{{ i }}</span>
           </div>
         </div>
 
-        <!-- Posts Grid -->
-        <div v-if="posts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          <div v-for="post in posts" :key="post.id" class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <!-- Posts - Instagram tarzı tek tek -->
+        <div v-if="posts.length > 0" class="space-y-6">
+          <div v-for="post in posts" :key="post.id" class="bg-black border-b border-gray-800 pb-4">
             <!-- Post Header -->
-            <div class="flex items-center justify-between p-3 sm:p-4">
+            <div class="flex items-center justify-between p-4">
               <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5">
-                  <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
-                    <span class="text-xs font-semibold">{{ post.username?.charAt(0) || 'U' }}</span>
+                <div class="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full p-0.5">
+                  <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
+                    <span class="text-xs font-semibold text-white">{{ post.username?.charAt(0) || 'U' }}</span>
                   </div>
                 </div>
                 <div>
-                  <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ post.username || 'Kullanıcı' }}</h3>
-                  <p class="text-xs text-gray-500">{{ post.location || 'Konum belirtilmemiş' }}</p>
+                  <h3 class="font-semibold text-white text-sm">{{ post.username || 'Kullanıcı' }}</h3>
+                  <p class="text-xs text-gray-400">{{ post.location || 'Konum belirtilmemiş' }}</p>
                 </div>
+              </div>
+              <button class="text-gray-400 hover:text-white">
+                •••
+              </button>
+            </div>
+
+            <!-- Post Image - Full width -->
+            <div class="w-full aspect-square bg-gray-900 flex items-center justify-center relative">
+              <img 
+                v-if="post.image_url" 
+                :src="post.image_url" 
+                :alt="post.content" 
+                class="w-full h-full object-contain bg-black"
+                @load="handleImageLoad"
+                @error="handleImageError"
+              >
+              <div v-else class="text-gray-500 text-lg flex flex-col items-center">
+                <span class="text-4xl mb-2">📸</span>
+                <span>{{ post.content }}</span>
+              </div>
+              
+              <!-- Yükleme göstergesi -->
+              <div v-if="imageLoadingStates[post.id]" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div class="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               </div>
             </div>
 
-            <!-- Post Image -->
-            <div class="w-full h-64 sm:h-80 bg-gray-100 flex items-center justify-center">
-              <img v-if="post.image_url" :src="post.image_url" :alt="post.content" class="w-full h-full object-cover">
-              <span v-else class="text-gray-500 text-base sm:text-lg">📸 {{ post.content }}</span>
-            </div>
-
             <!-- Post Actions -->
-            <div class="p-3 sm:p-4 space-y-2 sm:space-y-3">
+            <div class="p-4 space-y-3">
               <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3 sm:space-x-4">
+                <div class="flex items-center space-x-4">
                   <button 
                     @click="toggleLike(post.id)"
                     class="transition-all duration-300 transform hover:scale-110 text-2xl"
-                    :class="userLikes.includes(post.id) ? 'text-red-500' : 'text-gray-700 hover:text-red-500'"
+                    :class="userLikes.includes(post.id) ? 'text-red-500' : 'text-white hover:text-red-400'"
                   >
                     {{ userLikes.includes(post.id) ? '❤️' : '🤍' }}
                   </button>
                   <button 
                     @click="showComments(post.id)"
-                    class="text-gray-700 hover:text-blue-500 transition-colors text-2xl"
+                    class="text-white hover:text-blue-400 transition-colors text-2xl transform hover:scale-110"
                   >
                     💬
                   </button>
+                  <button class="text-white hover:text-green-400 transition-colors text-2xl transform hover:scale-110">
+                    📤
+                  </button>
                 </div>
+                <button class="text-white hover:text-yellow-400 transition-colors text-2xl transform hover:scale-110">
+                  🔖
+                </button>
               </div>
 
-              <div class="text-sm font-semibold text-gray-900">
+              <div class="text-sm font-semibold text-white">
                 {{ post.likes_count || 0 }} beğenme
               </div>
 
               <div class="text-sm">
-                <span class="font-semibold text-gray-900">{{ post.username || 'Kullanıcı' }}</span>
-                <span class="text-gray-800">{{ post.content }}</span>
+                <span class="font-semibold text-white mr-2">{{ post.username || 'Kullanıcı' }}</span>
+                <span class="text-gray-200">{{ post.content }}</span>
               </div>
 
               <div 
                 @click="showComments(post.id)"
-                class="text-sm text-gray-500 cursor-pointer hover:text-gray-700"
+                class="text-sm text-gray-400 cursor-pointer hover:text-gray-300"
               >
                 {{ post.comments_count || 0 }} yorumun tümünü gör
               </div>
 
-              <div class="text-xs text-gray-400">
+              <div class="text-xs text-gray-500">
                 {{ formatTime(post.created_at) }}
               </div>
             </div>
@@ -156,13 +179,13 @@
 
         <!-- Boş state -->
         <div v-else class="text-center py-12">
-          <div class="text-gray-400 mb-4">
+          <div class="text-gray-600 mb-4">
             <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Henüz gönderi yok</h3>
-          <p class="text-gray-600 mb-4">İlk gönderiyi paylaşmak için "Yeni Gönderi" butonuna tıkla!</p>
+          <h3 class="text-lg font-semibold text-white mb-2">Henüz gönderi yok</h3>
+          <p class="text-gray-400 mb-4">İlk gönderiyi paylaşmak için "Yeni Gönderi" butonuna tıkla!</p>
           <button 
             @click="showCreatePost = true"
             class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:from-pink-600 hover:to-purple-700 transition-all"
@@ -176,7 +199,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { useAuthStore } from './stores/auth.js'
 import { useLikesStore } from './stores/likes.js'
 import { supabase } from './supabase.js'
@@ -193,6 +216,23 @@ const showCommentsModal = ref(false)
 const selectedPostId = ref(null)
 const posts = ref([])
 const userLikes = ref([])
+const imageLoadingStates = reactive({})
+
+// Resim yükleme durumu
+const handleImageLoad = (event) => {
+  const postId = event.target.closest('[data-post-id]')?.dataset.postId
+  if (postId) {
+    imageLoadingStates[postId] = false
+  }
+}
+
+const handleImageError = (event) => {
+  const postId = event.target.closest('[data-post-id]')?.dataset.postId
+  if (postId) {
+    imageLoadingStates[postId] = false
+    console.error('Resim yüklenemedi:', postId)
+  }
+}
 
 // Zaman formatlama
 const formatTime = (timestamp) => {
@@ -294,6 +334,13 @@ const fetchPosts = async () => {
     if (error) throw error
     posts.value = data || []
     console.log('Postlar çekildi:', posts.value.length)
+
+    // Resim yükleme durumlarını başlat
+    posts.value.forEach(post => {
+      if (post.image_url) {
+        imageLoadingStates[post.id] = true
+      }
+    })
 
     // Kullanıcının beğendiklerini getir
     if (auth.user) {
