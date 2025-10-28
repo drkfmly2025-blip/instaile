@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-black"> <!-- Arkaplanı siyah yapıyoruz -->
+  <div class="min-h-screen bg-black">
     <!-- Auth durumuna göre içerik -->
     <div v-if="auth.isLoading" class="min-h-screen flex items-center justify-center bg-black">
       <div class="text-center">
@@ -87,8 +87,8 @@
         </div>
 
         <!-- Posts - Instagram tarzı tek tek -->
-        <div v-if="posts.length > 0" class="space-y-6">
-          <div v-for="post in posts" :key="post.id" class="bg-black border-b border-gray-800 pb-4">
+        <div v-if="posts.length > 0">
+          <div v-for="post in posts" :key="post.id" class="bg-black border-b border-gray-800 pb-4 mb-6">
             <!-- Post Header -->
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center space-x-3">
@@ -108,23 +108,16 @@
             </div>
 
             <!-- Post Image - Full width -->
-            <div class="w-full aspect-square bg-gray-900 flex items-center justify-center relative">
+            <div class="w-full aspect-square bg-gray-900 flex items-center justify-center">
               <img 
                 v-if="post.image_url" 
                 :src="post.image_url" 
                 :alt="post.content" 
                 class="w-full h-full object-contain bg-black"
-                @load="handleImageLoad"
-                @error="handleImageError"
               >
               <div v-else class="text-gray-500 text-lg flex flex-col items-center">
                 <span class="text-4xl mb-2">📸</span>
-                <span>{{ post.content }}</span>
-              </div>
-              
-              <!-- Yükleme göstergesi -->
-              <div v-if="imageLoadingStates[post.id]" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div class="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span class="text-white">{{ post.content }}</span>
               </div>
             </div>
 
@@ -199,7 +192,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from './stores/auth.js'
 import { useLikesStore } from './stores/likes.js'
 import { supabase } from './supabase.js'
@@ -216,23 +209,6 @@ const showCommentsModal = ref(false)
 const selectedPostId = ref(null)
 const posts = ref([])
 const userLikes = ref([])
-const imageLoadingStates = reactive({})
-
-// Resim yükleme durumu
-const handleImageLoad = (event) => {
-  const postId = event.target.closest('[data-post-id]')?.dataset.postId
-  if (postId) {
-    imageLoadingStates[postId] = false
-  }
-}
-
-const handleImageError = (event) => {
-  const postId = event.target.closest('[data-post-id]')?.dataset.postId
-  if (postId) {
-    imageLoadingStates[postId] = false
-    console.error('Resim yüklenemedi:', postId)
-  }
-}
 
 // Zaman formatlama
 const formatTime = (timestamp) => {
@@ -334,13 +310,6 @@ const fetchPosts = async () => {
     if (error) throw error
     posts.value = data || []
     console.log('Postlar çekildi:', posts.value.length)
-
-    // Resim yükleme durumlarını başlat
-    posts.value.forEach(post => {
-      if (post.image_url) {
-        imageLoadingStates[post.id] = true
-      }
-    })
 
     // Kullanıcının beğendiklerini getir
     if (auth.user) {
